@@ -1,0 +1,19 @@
+{
+  "name": "chat-mcp",
+  "type": "module",
+  "private": true,
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^7"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.30.0",
+    "zod": "^4.6.5"
+  },
+  "scripts": {
+    "start": "bun src/index.ts",
+    "test": "bun test"
+  }
+}
