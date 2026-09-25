@@ -1,6 +1,7 @@
 import { Database } from "bun:sqlite";
-import { homedir } from "node:os";
 import { join } from "node:path";
+import { codexHome } from "./paths.ts";
+import { toIso } from "./time.ts";
 
 export type CatalogEntry = {
   id: string;
@@ -9,14 +10,11 @@ export type CatalogEntry = {
   updated_at: string;
 };
 
-export const codexHome = () => process.env.CODEX_HOME ?? join(homedir(), ".codex");
-
 // ChatGPT Desktop keeps writing to this DB (WAL), so open it read-only and never write.
 export function openCatalog(path = join(codexHome(), "sqlite", "codex-dev.db")) {
   return new Database(path, { readonly: true });
 }
 
-const toIso = (seconds: number) => new Date(seconds * 1000).toISOString();
 const escapeLike = (s: string) => s.replace(/[\\%_]/g, (c) => `\\${c}`);
 
 export function searchCatalog(db: Database, query: string, limit: number): CatalogEntry[] {
