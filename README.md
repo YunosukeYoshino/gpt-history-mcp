@@ -1,35 +1,52 @@
 # chat-mcp
 
-ChatGPT のクラウド会話を検索して、本文を読むための MCP サーバー（stdio）です。
-エクスポートやスクレイピングは使いません。ChatGPT Desktop が同期しているカタログと、ChatGPT 本体の API を直接読みます。
+English | [日本語](README.ja.md)
+
+An MCP server (stdio) that lets your AI assistant **search and read your ChatGPT conversations**.
+
+No data export and no scraping: it reads the conversation catalog that the ChatGPT desktop app already syncs to disk, and fetches message bodies from ChatGPT on demand.
+
+```text
+You:    Find the chat where I discussed our ICP with ChatGPT and summarize it.
+Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → summary
+```
 
 > [!WARNING]
-> `chatgpt.com/backend-api` は非公開の API です。予告なく仕様が変わる可能性があり、利用規約上もグレーです。
-> 自分のアカウントで、読み取りだけに使ってください。配布や公開、一括ダウンロードの用途には使わないでください。
+> This project uses `chatgpt.com/backend-api`, an **undocumented internal API**. It may change or break at any time, and automated access may conflict with OpenAI's Terms of Use.
+> Use it only with your own account, read-only, at human pace. Do not use it for bulk downloading.
+> This project is not affiliated with or endorsed by OpenAI.
 
-## 前提（Prerequisites）
+## Features
 
-- macOS に ChatGPT Desktop（Codex 統合版）が入っていて、同期済みであること
-- `~/.codex/auth.json` に ChatGPT ログインのトークンがあること（`codex login` で ChatGPT アカウントにログインすると作られます）
-- [Bun](https://bun.sh) 1.4 以上
+- **Title search, offline**: queries the local catalog kept by the ChatGPT desktop app
+- **Full-text search**: searches message bodies through ChatGPT's own search, with snippets
+- **Read a conversation**: returns the visible branch as a clean `user` / `assistant` transcript
+- **Read-only by design**: only `GET` requests. The local database is opened read-only. Tokens never appear in logs or output.
 
-## セットアップ（Setup）
+## Requirements
+
+- macOS with the **ChatGPT desktop app** (the version with Codex built in), signed in and synced
+- `~/.codex/auth.json` holding a ChatGPT login. Run `codex login` and sign in with your ChatGPT account to create it.
+- [Bun](https://bun.sh) 1.4 or later. The server must run on Bun: other HTTP clients are blocked by Cloudflare.
+
+## Installation
 
 ```sh
+git clone https://github.com/YunosukeYoshino/chat-mcp.git
+cd chat-mcp
 bun install
 ```
 
-続けて、使う MCP クライアントに登録します。以下の例の `/path/to/chat-mcp` はこのリポジトリの絶対パスに置き換えてください。
-GUI アプリは PATH を引き継がないことがあるので、`bun` も `which bun` で調べた絶対パス（例: `/usr/local/bin/bun`）で書くと確実です。
+Then register the server with your MCP client. In the examples below, replace `/path/to/chat-mcp` with the absolute path of your clone.
+GUI apps may not inherit your shell's `PATH`, so use the absolute path of `bun` there (find it with `which bun`, e.g. `/usr/local/bin/bun`).
 
 ### Claude Code
 
 ```sh
-# 全プロジェクトで使う
 claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
 ```
 
-プロジェクト単位で共有したい場合は、そのプロジェクトのルートに `.mcp.json` を置きます。
+To share it with a single project instead, put this `.mcp.json` at that project's root:
 
 ```json
 {
@@ -44,7 +61,7 @@ claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
 
 ### Claude Desktop
 
-`~/Library/Application Support/Claude/claude_desktop_config.json` に追記して、アプリを再起動します。
+Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, then restart the app:
 
 ```json
 {
@@ -57,9 +74,9 @@ claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
 }
 ```
 
-### Codex（CLI と ChatGPT Desktop）
+### Codex (CLI and ChatGPT desktop)
 
-`~/.codex/config.toml` に追記します。
+Add this to `~/.codex/config.toml`:
 
 ```toml
 [mcp_servers.chat-mcp]
@@ -69,34 +86,30 @@ args = ["/path/to/chat-mcp/src/index.ts"]
 
 ### Cursor
 
-`~/.cursor/mcp.json`（プロジェクト単位なら `.cursor/mcp.json`）に、Claude Desktop と同じ形式で `mcpServers` を書きます。
+Use the same `mcpServers` JSON as Claude Desktop, in `~/.cursor/mcp.json` (or `.cursor/mcp.json` for a single project).
 
-### 確認
+### Verify
 
-登録したら、クライアントから `search_chatgpt_chats` を空のクエリで呼び、最近の会話が返るか確かめます。
-単体で確認したい場合は MCP Inspector を使います。
+Call `search_chatgpt_chats` with an empty query from your client. It should list your recent chats.
+To test the server on its own, use the MCP Inspector:
 
 ```sh
 bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
 ```
 
-環境変数 `CODEX_HOME` を使っている場合は、各設定の `env` にも同じ値を渡してください。
+## Tools
 
-## 使い方（Usage）
-
-| ツール | 入力 | 返り値 | データ源 |
+| Tool | Input | Output | Source |
 |---|---|---|---|
-| `search_chatgpt_chats` | `query`, `limit`（既定 20） | `[{id, title, created_at, updated_at}]` | ローカルのカタログ（ネットワークなし） |
+| `search_chatgpt_chats` | `query`, `limit` (default 20) | `[{id, title, created_at, updated_at}]` | Local catalog (no network) |
 | `search_chatgpt_messages` | `query`, `cursor?` | `{results: [{id, title, snippet, updated_at, archived}], next_cursor}` | `GET /backend-api/conversations/search` |
 | `get_chatgpt_chat` | `id` | `{id, title, messages: [{role, content, create_time}]}` | `GET /backend-api/conversation/{id}` |
 
-- `search_chatgpt_chats` はタイトルだけを対象にします。スペース区切りの語をすべて含むものを返し（AND 検索）、空のクエリなら最近の会話を返します。
-- 本文まで探したいときは `search_chatgpt_messages` を使います。
-- `get_chatgpt_chat` は、画面に表示されているブランチの user と assistant の発言だけを返します。system、tool、非表示のメッセージは除きます。
+- `search_chatgpt_chats` matches titles only. All space-separated words must match. An empty query lists the most recent chats.
+- `search_chatgpt_messages` also searches message bodies. Use it when the title is not enough.
+- `get_chatgpt_chat` returns only the branch currently shown in ChatGPT. System messages, tool messages and hidden messages are dropped.
 
-使い方の例: 「ChatGPT で ICP について話した会話を探して、要点をまとめて」
-
-## 仕組み
+## How it works
 
 ```text
 ~/.codex/sqlite/codex-dev.db          ~/.codex/auth.json
@@ -108,35 +121,45 @@ bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
                                    └─ conversation/{id}    → get_chatgpt_chat
 ```
 
-- カタログは ChatGPT Desktop が書き込み中の SQLite です。読み取り専用で開きます。
-- トークンは Codex が更新するため、リクエストのたびに auth.json を読み直します。
-- 環境変数 `CODEX_HOME` を設定すると、`~/.codex` の代わりにそのディレクトリを使います。
+- The ChatGPT desktop app writes to the catalog database while it runs, so chat-mcp opens it read-only.
+- Codex refreshes the token in `auth.json`, so chat-mcp re-reads the file on every request.
 
-## トラブルシューティング
+## Configuration
 
-| エラー | 原因と対処 |
+| Variable | Default | Description |
+|---|---|---|
+| `CODEX_HOME` | `~/.codex` | Where to find `auth.json` and `sqlite/codex-dev.db`. Pass it through your client's `env` setting. |
+
+## Troubleshooting
+
+| Error | Cause and fix |
 |---|---|
-| `401` | トークンの期限切れです。Codex を起動するか、`codex login` を実行してください。 |
-| `403（HTML）` | Cloudflare にブロックされています。Bun 以外のランタイムで動かしていないか確認してください。 |
-| `auth.json が見つかりません` | `codex login` で ChatGPT アカウントにログインしてください。 |
+| `401` | The token has expired. Open the ChatGPT desktop app or Codex, or run `codex login`. |
+| `403 (HTML)` | Cloudflare blocked the request. Make sure the server runs on Bun. |
+| `auth.json not found` / `no ChatGPT token` | Run `codex login` and sign in with your ChatGPT account (API-key login is not enough). |
+| `unable to open database file` | The ChatGPT desktop app has not synced yet, or `CODEX_HOME` points somewhere else. |
 
-## 開発（Development）
+## Development
 
 ```sh
-bun test            # ユニットテスト（実際の API や認証情報は使わない）
-bunx tsc --noEmit   # 型チェック
-bun start           # stdio サーバーを起動（MCP クライアント経由で使うのが普通）
+bun test            # unit tests. They never touch the real API or your credentials.
+bunx tsc --noEmit   # type check
+bun start           # start the stdio server (usually launched by an MCP client)
 ```
-
-## 構成（Structure）
 
 ```text
 src/
-├── index.ts      MCP サーバーとツールの登録
-├── catalog.ts    カタログの検索（bun:sqlite、読み取り専用）
-├── chatgpt.ts    認証の読み込み、backend-api の GET、検索結果と会話の正規化
-├── linearize.ts  会話ツリーを時系列の発言に変換
-├── paths.ts      CODEX_HOME の解決
-└── time.ts       Unix 秒を ISO 8601 に変換
-test/             bun test（フィクスチャ、偽の fetch、一時ファイル）
+├── index.ts      MCP server and tool registration
+├── catalog.ts    catalog search (bun:sqlite, read-only)
+├── chatgpt.ts    auth loading, GET-only backend-api client, response normalization
+├── linearize.ts  conversation tree → ordered messages
+├── paths.ts      CODEX_HOME resolution
+└── time.ts       Unix seconds → ISO 8601
+test/             bun test (fixtures, fake fetch, temp files)
 ```
+
+Contributor and agent guidelines are in [AGENTS.md](AGENTS.md).
+
+## License
+
+[MIT](LICENSE)

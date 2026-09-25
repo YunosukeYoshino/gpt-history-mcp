@@ -4,38 +4,43 @@ last_validated: 2026-09-25
 
 # AGENTS.md
 
-ChatGPT のクラウド会話を読む MCP サーバー（Bun、TypeScript、stdio）。ツールの一覧と仕組みは README.md を参照。
+MCP server (Bun, TypeScript, stdio) that reads ChatGPT conversations. See README.md for the tools and how they work.
 
-## コマンド（Commands）
+## Commands
 
-- `bun test`: テストを実行する。偽の fetch、一時ファイル、インメモリの SQLite だけを使う
-- `bunx tsc --noEmit`: 型チェック
-- `bun start`: stdio サーバーを起動する
+- `bun test`: run the tests. They use only a fake fetch, temp files, and in-memory SQLite.
+- `bunx tsc --noEmit`: type check
+- `bun start`: start the stdio server
 
-変更したら、両方が通るまで完了にしない。
+A change is not done until both `bun test` and `bunx tsc --noEmit` pass.
 
-## 構成（Structure）
+## Structure
 
-- `src/index.ts`: ツールの登録だけを置く。ロジックは持たない
-- `src/chatgpt.ts`: 認証、`backendGet`、API レスポンスの正規化（`getConversation` と `searchConversations`）
-- `src/catalog.ts`: カタログの SQLite 検索
-- `src/linearize.ts`: 会話ツリー（`mapping` と `current_node`）を発言の列に変換
-- `src/paths.ts`, `src/time.ts`: `codexHome` と `toIso`
+- `src/index.ts`: tool registration only. No logic here.
+- `src/chatgpt.ts`: auth, `backendGet`, API response normalization (`getConversation`, `searchConversations`)
+- `src/catalog.ts`: SQLite catalog search
+- `src/linearize.ts`: conversation tree (`mapping` + `current_node`) → list of messages
+- `src/paths.ts`, `src/time.ts`: `codexHome`, `toIso`
 
-## 守ること（Safety）
+## Safety
 
-- **GET だけ**: backend-api への書き込み系リクエスト（POST、PATCH、DELETE）を追加しない。会話を変更する経路を作らない。
-- **Bun の fetch を使う**: curl、Python、node-fetch では Cloudflare に HTML の 403 で弾かれる。HTTP 呼び出しは必ず `backendGet`（`src/chatgpt.ts`）を通す。ヘッダーの `originator: codex_cli_rs` は外さない。
-- **トークンを漏らさない**: アクセストークンをログ、エラーメッセージ、ツールの返り値に含めない。`readAuth` の結果をキャッシュしない（Codex が auth.json を更新するため）。
-- **カタログは読み取り専用**: `codex-dev.db` は ChatGPT Desktop が書き込み中。`openCatalog` の `readonly: true` を外さない。`missing_candidate = 0` の行だけを対象にする。
-- **時刻は Unix 秒**: カタログも API も秒で持つ。ISO への変換は `toIso`（`src/time.ts`）を使う。
-- **外部 JSON を信用しない**: API のレスポンス形式は ChatGPT Desktop のバンドルから推測したもので、公式の仕様ではない。フィールドは `typeof` で確かめてから使う（`searchConversations` の書き方に合わせる）。
+- **GET only**: never add write requests (POST, PATCH, DELETE) to backend-api. There must be no code path that modifies a conversation.
+- **Bun fetch only**: curl, Python and node-fetch get an HTML 403 from Cloudflare. Route every HTTP call through `backendGet` (`src/chatgpt.ts`). Keep the `originator: codex_cli_rs` header.
+- **Never leak the token**: keep the access token out of logs, error messages and tool output. Do not cache `readAuth`: Codex rewrites `auth.json` when it refreshes the token.
+- **Catalog is read-only**: the ChatGPT desktop app writes to `codex-dev.db` while it runs. Keep `readonly: true` in `openCatalog`. Only use rows with `missing_candidate = 0`.
+- **Timestamps are Unix seconds**: both the catalog and the API use seconds. Convert with `toIso` (`src/time.ts`).
+- **Do not trust external JSON**: the API response shapes were inferred from the ChatGPT desktop bundle, not from a spec. Check each field with `typeof` before using it (follow `searchConversations`).
+- **Keep user-facing text in English**: error messages and tool descriptions. Update the Troubleshooting sections in both README.md and README.ja.md when an error message changes.
 
-## テスト
+## Tests
 
-- 実際の `~/.codex/auth.json` や chatgpt.com をテストから触らない。認証は `auth` 引数、HTTP は `fetchImpl` 引数で差し替える。
-- 実データでの確認はユーザーに頼む。自動モードでは、auth.json を読むコマンドの実行がブロックされる。
+- Never touch the real `~/.codex/auth.json` or chatgpt.com from tests. Inject auth through the `auth` option and HTTP through `fetchImpl`.
+- Leave checks against real data to the user. In Claude Code auto mode, commands that read `auth.json` are blocked.
 
-## レスポンス形式を調べるとき
+## Docs
 
-API の形式が変わったら、`/Applications/ChatGPT.app/Contents/Resources/app.asar` を `rg -a` で検索する（例: ``safeGet\(`/conversation``）。展開は不要。
+README.md (English) and README.ja.md (Japanese) have the same sections. Change both together.
+
+## When the API shape changes
+
+Search `/Applications/ChatGPT.app/Contents/Resources/app.asar` with `rg -a` (e.g. ``safeGet\(`/conversation``). No need to extract it.

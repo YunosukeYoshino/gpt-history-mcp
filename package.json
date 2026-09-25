@@ -1,5 +1,23 @@
 {
   "name": "chat-mcp",
+  "version": "0.1.0",
+  "description": "MCP server to search and read your ChatGPT conversations via the ChatGPT desktop app catalog",
+  "license": "MIT",
+  "author": "Yunosuke Yoshino",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/YunosukeYoshino/chat-mcp.git"
+  },
+  "keywords": [
+    "mcp",
+    "model-context-protocol",
+    "chatgpt",
+    "codex",
+    "bun"
+  ],
+  "engines": {
+    "bun": ">=1.4.0"
+  },
   "type": "module",
   "private": true,
   "devDependencies": {
