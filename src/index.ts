@@ -13,9 +13,9 @@ server.registerTool(
   "search_chatgpt_chats",
   {
     description:
-      "ChatGPT のクラウド会話をタイトルで検索する（ローカルの Codex カタログを使い、ネットワークは使わない）。空クエリなら最近の会話を返す。",
+      "Search ChatGPT conversations by title using the local Codex catalog (no network). An empty query lists the most recent chats.",
     inputSchema: {
-      query: z.string().describe("タイトルに含まれる語。スペース区切りで AND 検索"),
+      query: z.string().describe("Words in the title. All space-separated words must match."),
       limit: z.number().int().min(1).max(100).default(20),
     },
     annotations: { readOnlyHint: true, openWorldHint: false },
@@ -33,8 +33,8 @@ server.registerTool(
 server.registerTool(
   "get_chatgpt_chat",
   {
-    description: "ChatGPT の会話本文を取得する。表示中のブランチの user/assistant の発言を時系列で返す。",
-    inputSchema: { id: z.string().min(1).describe("conversation ID（search_* の id）") },
+    description: "Read a ChatGPT conversation. Returns the user/assistant messages of the visible branch in chronological order.",
+    inputSchema: { id: z.string().min(1).describe("Conversation ID (the id returned by search_* tools)") },
     annotations: readOnly,
   },
   async ({ id }) => json(await getConversation(id)),
@@ -43,10 +43,10 @@ server.registerTool(
 server.registerTool(
   "search_chatgpt_messages",
   {
-    description: "ChatGPT の会話をメッセージ本文も含めて全文検索する（ChatGPT の検索 API を使う）。",
+    description: "Full-text search over ChatGPT conversations, including message bodies, via ChatGPT's search API.",
     inputSchema: {
       query: z.string().min(1),
-      cursor: z.string().optional().describe("前回の結果の next_cursor"),
+      cursor: z.string().optional().describe("next_cursor from the previous result"),
     },
     annotations: readOnly,
   },

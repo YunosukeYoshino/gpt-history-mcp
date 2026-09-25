@@ -10,10 +10,10 @@ export type Auth = { accessToken: string; accountId?: string };
 // Re-read on every call: Codex refreshes the token in place.
 export async function readAuth(path = join(codexHome(), "auth.json")): Promise<Auth> {
   const file = Bun.file(path);
-  if (!(await file.exists())) throw new Error(`${path} が見つかりません。\`codex login\` で ChatGPT にログインしてください。`);
+  if (!(await file.exists())) throw new Error(`auth.json not found at ${path}. Run \`codex login\` and sign in with ChatGPT.`);
   const tokens = (await file.json())?.tokens;
   if (typeof tokens?.access_token !== "string") {
-    throw new Error(`${path} に ChatGPT のトークンがありません。\`codex login\` で ChatGPT にログインしてください。`);
+    throw new Error(`no ChatGPT token in ${path}. Run \`codex login\` and sign in with ChatGPT.`);
   }
   return { accessToken: tokens.access_token, accountId: typeof tokens.account_id === "string" ? tokens.account_id : undefined };
 }
@@ -35,13 +35,13 @@ export async function backendGet<T = unknown>(path: string, { auth, fetchImpl = 
   if (res.ok) return (await res.json()) as T;
 
   if (res.status === 401) {
-    throw new Error("ChatGPT API が 401 を返しました。トークンの期限切れです。`codex login` か Codex の起動で更新してください。");
+    throw new Error("ChatGPT API returned 401: the token has expired. Open ChatGPT desktop or Codex, or run `codex login`.");
   }
   if (!res.headers.get("content-type")?.includes("json")) {
-    throw new Error(`ChatGPT API が ${res.status}（HTML）を返しました。Cloudflare にブロックされた可能性があります。`);
+    throw new Error(`ChatGPT API returned ${res.status} (HTML): probably blocked by Cloudflare. Make sure the server runs on Bun.`);
   }
   const detail = await res.json().then((b) => (b as { detail?: unknown } | null)?.detail, () => undefined);
-  throw new Error(`ChatGPT API が ${res.status} を返しました: ${typeof detail === "string" ? detail : JSON.stringify(detail)}`);
+  throw new Error(`ChatGPT API returned ${res.status}: ${typeof detail === "string" ? detail : JSON.stringify(detail)}`);
 }
 
 const str = (v: unknown) => (typeof v === "string" ? v : null);
