@@ -17,10 +17,70 @@ ChatGPT のクラウド会話を検索して、本文を読むための MCP サ�
 
 ```sh
 bun install
-claude mcp add chat-mcp -- bun "$(pwd)/src/index.ts"
 ```
 
-ほかの MCP クライアントで使う場合は、起動コマンドに `bun /path/to/chat-mcp/src/index.ts` を指定してください。
+続けて、使う MCP クライアントに登録します。以下の例の `/path/to/chat-mcp` はこのリポジトリの絶対パスに置き換えてください。
+GUI アプリは PATH を引き継がないことがあるので、`bun` も `which bun` で調べた絶対パス（例: `/usr/local/bin/bun`）で書くと確実です。
+
+### Claude Code
+
+```sh
+# 全プロジェクトで使う
+claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
+```
+
+プロジェクト単位で共有したい場合は、そのプロジェクトのルートに `.mcp.json` を置きます。
+
+```json
+{
+  "mcpServers": {
+    "chat-mcp": {
+      "command": "bun",
+      "args": ["/path/to/chat-mcp/src/index.ts"]
+    }
+  }
+}
+```
+
+### Claude Desktop
+
+`~/Library/Application Support/Claude/claude_desktop_config.json` に追記して、アプリを再起動します。
+
+```json
+{
+  "mcpServers": {
+    "chat-mcp": {
+      "command": "/usr/local/bin/bun",
+      "args": ["/path/to/chat-mcp/src/index.ts"]
+    }
+  }
+}
+```
+
+### Codex（CLI と ChatGPT Desktop）
+
+`~/.codex/config.toml` に追記します。
+
+```toml
+[mcp_servers.chat-mcp]
+command = "/usr/local/bin/bun"
+args = ["/path/to/chat-mcp/src/index.ts"]
+```
+
+### Cursor
+
+`~/.cursor/mcp.json`（プロジェクト単位なら `.cursor/mcp.json`）に、Claude Desktop と同じ形式で `mcpServers` を書きます。
+
+### 確認
+
+登録したら、クライアントから `search_chatgpt_chats` を空のクエリで呼び、最近の会話が返るか確かめます。
+単体で確認したい場合は MCP Inspector を使います。
+
+```sh
+bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
+```
+
+環境変数 `CODEX_HOME` を使っている場合は、各設定の `env` にも同じ値を渡してください。
 
 ## 使い方（Usage）
 
