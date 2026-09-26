@@ -33,13 +33,13 @@ Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → �
 
 ### npx ですぐに使う
 
-クローンは不要です。`npx` が GitHub からパッケージを取ってきて Bun で起動します。そのため `bun` が `PATH` にある必要があります。
+クローンは不要です。`npx` が npm からパッケージを取ってきて Bun で起動します。そのため `bun` が `PATH` にある必要があります。
 
 ```sh
-claude mcp add --scope user gpt-history-mcp -- npx -y github:YunosukeYoshino/gpt-history-mcp
+claude mcp add --scope user gpt-history-mcp -- npx -y gpt-history-mcp
 ```
 
-ほかのクライアントでは、以下の例の設定を `"command": "npx"`、`"args": ["-y", "github:YunosukeYoshino/gpt-history-mcp"]` に置き換えてください。
+ほかのクライアントでは、以下の例の設定を `"command": "npx"`、`"args": ["-y", "gpt-history-mcp"]` に置き換えてください。
 
 ### クローンして使う
 

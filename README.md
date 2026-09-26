@@ -33,13 +33,13 @@ Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → su
 
 ### Quick start with npx
 
-No clone needed. `npx` fetches the package from GitHub and runs it with Bun, so `bun` must be on your `PATH`:
+No clone needed. `npx` fetches the package from npm and runs it with Bun, so `bun` must be on your `PATH`:
 
 ```sh
-claude mcp add --scope user gpt-history-mcp -- npx -y github:YunosukeYoshino/gpt-history-mcp
+claude mcp add --scope user gpt-history-mcp -- npx -y gpt-history-mcp
 ```
 
-For other clients, use `"command": "npx"` and `"args": ["-y", "github:YunosukeYoshino/gpt-history-mcp"]` in the examples below.
+For other clients, use `"command": "npx"` and `"args": ["-y", "gpt-history-mcp"]` in the examples below.
 
 ### From a clone
 
