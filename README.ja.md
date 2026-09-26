@@ -1,4 +1,4 @@
-# chat-mcp
+# chatgpt-mcp
 
 [English](README.md) | 日本語
 
@@ -32,18 +32,18 @@ Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → �
 ## インストール
 
 ```sh
-git clone https://github.com/YunosukeYoshino/chat-mcp.git
-cd chat-mcp
+git clone https://github.com/YunosukeYoshino/chatgpt-mcp.git
+cd chatgpt-mcp
 bun install
 ```
 
-続けて、使う MCP クライアントに登録します。以下の例の `/path/to/chat-mcp` は、クローンした場所の絶対パスに置き換えてください。
+続けて、使う MCP クライアントに登録します。以下の例の `/path/to/chatgpt-mcp` は、クローンした場所の絶対パスに置き換えてください。
 GUI アプリはシェルの `PATH` を引き継がないことがあります。GUI アプリの設定では `bun` も絶対パスで書いてください（`which bun` で調べられます。例: `/usr/local/bin/bun`）。
 
 ### Claude Code
 
 ```sh
-claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
+claude mcp add --scope user chatgpt-mcp -- bun /path/to/chatgpt-mcp/src/index.ts
 ```
 
 特定のプロジェクトだけで使う場合は、そのプロジェクトのルートに次の `.mcp.json` を置きます。
@@ -51,9 +51,9 @@ claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
 ```json
 {
   "mcpServers": {
-    "chat-mcp": {
+    "chatgpt-mcp": {
       "command": "bun",
-      "args": ["/path/to/chat-mcp/src/index.ts"]
+      "args": ["/path/to/chatgpt-mcp/src/index.ts"]
     }
   }
 }
@@ -66,9 +66,9 @@ claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
 ```json
 {
   "mcpServers": {
-    "chat-mcp": {
+    "chatgpt-mcp": {
       "command": "/usr/local/bin/bun",
-      "args": ["/path/to/chat-mcp/src/index.ts"]
+      "args": ["/path/to/chatgpt-mcp/src/index.ts"]
     }
   }
 }
@@ -79,9 +79,9 @@ claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
 `~/.codex/config.toml` に追記します。
 
 ```toml
-[mcp_servers.chat-mcp]
+[mcp_servers.chatgpt-mcp]
 command = "/usr/local/bin/bun"
-args = ["/path/to/chat-mcp/src/index.ts"]
+args = ["/path/to/chatgpt-mcp/src/index.ts"]
 ```
 
 ### Cursor
@@ -94,7 +94,7 @@ Claude Desktop と同じ `mcpServers` の JSON を、`~/.cursor/mcp.json`（プ�
 サーバー単体で確かめたいときは、MCP Inspector を使います。
 
 ```sh
-bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
+bunx @modelcontextprotocol/inspector bun /path/to/chatgpt-mcp/src/index.ts
 ```
 
 ## ツール
@@ -121,8 +121,8 @@ bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
                                    └─ conversation/{id}    → get_chatgpt_chat
 ```
 
-- カタログの DB には、ChatGPT デスクトップアプリが起動中も書き込んでいます。そのため chat-mcp は読み取り専用で開きます。
-- `auth.json` のトークンは Codex が更新します。そのため chat-mcp はリクエストのたびにファイルを読み直します。
+- カタログの DB には、ChatGPT デスクトップアプリが起動中も書き込んでいます。そのため chatgpt-mcp は読み取り専用で開きます。
+- `auth.json` のトークンは Codex が更新します。そのため chatgpt-mcp はリクエストのたびにファイルを読み直します。
 
 ## 設定
 

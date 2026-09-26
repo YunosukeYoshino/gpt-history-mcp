@@ -1,4 +1,4 @@
-# chat-mcp
+# chatgpt-mcp
 
 English | [日本語](README.ja.md)
 
@@ -32,18 +32,18 @@ Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → su
 ## Installation
 
 ```sh
-git clone https://github.com/YunosukeYoshino/chat-mcp.git
-cd chat-mcp
+git clone https://github.com/YunosukeYoshino/chatgpt-mcp.git
+cd chatgpt-mcp
 bun install
 ```
 
-Then register the server with your MCP client. In the examples below, replace `/path/to/chat-mcp` with the absolute path of your clone.
+Then register the server with your MCP client. In the examples below, replace `/path/to/chatgpt-mcp` with the absolute path of your clone.
 GUI apps may not inherit your shell's `PATH`, so use the absolute path of `bun` there (find it with `which bun`, e.g. `/usr/local/bin/bun`).
 
 ### Claude Code
 
 ```sh
-claude mcp add --scope user chat-mcp -- bun /path/to/chat-mcp/src/index.ts
+claude mcp add --scope user chatgpt-mcp -- bun /path/to/chatgpt-mcp/src/index.ts
 ```
 
 To share it with a single project instead, put this `.mcp.json` at that project's root:
@@ -51,9 +51,9 @@ To share it with a single project instead, put this `.mcp.json` at that project'
 ```json
 {
   "mcpServers": {
-    "chat-mcp": {
+    "chatgpt-mcp": {
       "command": "bun",
-      "args": ["/path/to/chat-mcp/src/index.ts"]
+      "args": ["/path/to/chatgpt-mcp/src/index.ts"]
     }
   }
 }
@@ -66,9 +66,9 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, t
 ```json
 {
   "mcpServers": {
-    "chat-mcp": {
+    "chatgpt-mcp": {
       "command": "/usr/local/bin/bun",
-      "args": ["/path/to/chat-mcp/src/index.ts"]
+      "args": ["/path/to/chatgpt-mcp/src/index.ts"]
     }
   }
 }
@@ -79,9 +79,9 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, t
 Add this to `~/.codex/config.toml`:
 
 ```toml
-[mcp_servers.chat-mcp]
+[mcp_servers.chatgpt-mcp]
 command = "/usr/local/bin/bun"
-args = ["/path/to/chat-mcp/src/index.ts"]
+args = ["/path/to/chatgpt-mcp/src/index.ts"]
 ```
 
 ### Cursor
@@ -94,7 +94,7 @@ Call `search_chatgpt_chats` with an empty query from your client. It should list
 To test the server on its own, use the MCP Inspector:
 
 ```sh
-bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
+bunx @modelcontextprotocol/inspector bun /path/to/chatgpt-mcp/src/index.ts
 ```
 
 ## Tools
@@ -121,8 +121,8 @@ bunx @modelcontextprotocol/inspector bun /path/to/chat-mcp/src/index.ts
                                    └─ conversation/{id}    → get_chatgpt_chat
 ```
 
-- The ChatGPT desktop app writes to the catalog database while it runs, so chat-mcp opens it read-only.
-- Codex refreshes the token in `auth.json`, so chat-mcp re-reads the file on every request.
+- The ChatGPT desktop app writes to the catalog database while it runs, so chatgpt-mcp opens it read-only.
+- Codex refreshes the token in `auth.json`, so chatgpt-mcp re-reads the file on every request.
 
 ## Configuration
 

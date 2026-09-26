@@ -48,7 +48,7 @@ test("reports JSON 404 with the API detail", async () => {
 });
 
 const authFile = (content: string) => {
-  const path = join(mkdtempSync(join(tmpdir(), "chat-mcp-")), "auth.json");
+  const path = join(mkdtempSync(join(tmpdir(), "chatgpt-mcp-")), "auth.json");
   writeFileSync(path, content);
   return path;
 };
