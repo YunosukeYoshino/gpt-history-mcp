@@ -41,6 +41,16 @@ A change is not done until both `bun test` and `bunx tsc --noEmit` pass.
 
 README.md (English) and README.ja.md (Japanese) have the same sections. Change both together.
 
+## Release
+
+Pushing a `v*` tag runs `.github/workflows/publish.yml`, which tests and publishes to npm via trusted publishing (no npm token).
+Bump `version` in `package.json` first; the workflow fails if the tag does not equal `v<version>`.
+
+```sh
+npm version patch   # bumps package.json, commits, tags vX.Y.Z
+git push origin main --follow-tags
+```
+
 ## When the API shape changes
 
 Search `/Applications/ChatGPT.app/Contents/Resources/app.asar` with `rg -a` (e.g. ``safeGet\(`/conversation``). No need to extract it.
