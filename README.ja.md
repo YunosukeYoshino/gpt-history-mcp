@@ -31,6 +31,18 @@ Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → �
 
 ## インストール
 
+### npx ですぐに使う
+
+クローンは不要です。`npx` が GitHub からパッケージを取ってきて Bun で起動します。そのため `bun` が `PATH` にある必要があります。
+
+```sh
+claude mcp add --scope user gpt-history-mcp -- npx -y github:YunosukeYoshino/gpt-history-mcp
+```
+
+ほかのクライアントでは、以下の例の設定を `"command": "npx"`、`"args": ["-y", "github:YunosukeYoshino/gpt-history-mcp"]` に置き換えてください。
+
+### クローンして使う
+
 ```sh
 git clone https://github.com/YunosukeYoshino/gpt-history-mcp.git
 cd gpt-history-mcp
@@ -40,7 +52,7 @@ bun install
 続けて、使う MCP クライアントに登録します。以下の例の `/path/to/gpt-history-mcp` は、クローンした場所の絶対パスに置き換えてください。
 GUI アプリはシェルの `PATH` を引き継がないことがあります。GUI アプリの設定では `bun` も絶対パスで書いてください（`which bun` で調べられます。例: `/usr/local/bin/bun`）。
 
-### Claude Code
+#### Claude Code
 
 ```sh
 claude mcp add --scope user gpt-history-mcp -- bun /path/to/gpt-history-mcp/src/index.ts
@@ -59,7 +71,7 @@ claude mcp add --scope user gpt-history-mcp -- bun /path/to/gpt-history-mcp/src/
 }
 ```
 
-### Claude Desktop
+#### Claude Desktop
 
 `~/Library/Application Support/Claude/claude_desktop_config.json` に追記して、アプリを再起動します。
 
@@ -74,7 +86,7 @@ claude mcp add --scope user gpt-history-mcp -- bun /path/to/gpt-history-mcp/src/
 }
 ```
 
-### Codex（CLI と ChatGPT デスクトップ）
+#### Codex（CLI と ChatGPT デスクトップ）
 
 `~/.codex/config.toml` に追記します。
 
@@ -84,7 +96,7 @@ command = "/usr/local/bin/bun"
 args = ["/path/to/gpt-history-mcp/src/index.ts"]
 ```
 
-### Cursor
+#### Cursor
 
 Claude Desktop と同じ `mcpServers` の JSON を、`~/.cursor/mcp.json`（プロジェクト単位なら `.cursor/mcp.json`）に書きます。
 

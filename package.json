@@ -18,8 +18,16 @@
   "engines": {
     "bun": ">=1.4.0"
   },
+  "bin": {
+    "gpt-history-mcp": "src/index.ts"
+  },
+  "files": [
+    "src",
+    "README.md",
+    "README.ja.md",
+    "LICENSE"
+  ],
   "type": "module",
-  "private": true,
   "devDependencies": {
     "@types/bun": "latest"
   },

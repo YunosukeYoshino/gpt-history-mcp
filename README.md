@@ -31,6 +31,18 @@ Claude: → search_chatgpt_messages("ICP") → get_chatgpt_chat("6aa…") → su
 
 ## Installation
 
+### Quick start with npx
+
+No clone needed. `npx` fetches the package from GitHub and runs it with Bun, so `bun` must be on your `PATH`:
+
+```sh
+claude mcp add --scope user gpt-history-mcp -- npx -y github:YunosukeYoshino/gpt-history-mcp
+```
+
+For other clients, use `"command": "npx"` and `"args": ["-y", "github:YunosukeYoshino/gpt-history-mcp"]` in the examples below.
+
+### From a clone
+
 ```sh
 git clone https://github.com/YunosukeYoshino/gpt-history-mcp.git
 cd gpt-history-mcp
@@ -40,7 +52,7 @@ bun install
 Then register the server with your MCP client. In the examples below, replace `/path/to/gpt-history-mcp` with the absolute path of your clone.
 GUI apps may not inherit your shell's `PATH`, so use the absolute path of `bun` there (find it with `which bun`, e.g. `/usr/local/bin/bun`).
 
-### Claude Code
+#### Claude Code
 
 ```sh
 claude mcp add --scope user gpt-history-mcp -- bun /path/to/gpt-history-mcp/src/index.ts
@@ -59,7 +71,7 @@ To share it with a single project instead, put this `.mcp.json` at that project'
 }
 ```
 
-### Claude Desktop
+#### Claude Desktop
 
 Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, then restart the app:
 
@@ -74,7 +86,7 @@ Add this to `~/Library/Application Support/Claude/claude_desktop_config.json`, t
 }
 ```
 
-### Codex (CLI and ChatGPT desktop)
+#### Codex (CLI and ChatGPT desktop)
 
 Add this to `~/.codex/config.toml`:
 
@@ -84,7 +96,7 @@ command = "/usr/local/bin/bun"
 args = ["/path/to/gpt-history-mcp/src/index.ts"]
 ```
 
-### Cursor
+#### Cursor
 
 Use the same `mcpServers` JSON as Claude Desktop, in `~/.cursor/mcp.json` (or `.cursor/mcp.json` for a single project).
 
