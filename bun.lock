@@ -3,7 +3,7 @@
   "configVersion": 1,
   "workspaces": {
     "": {
-      "name": "chatgpt-mcp",
+      "name": "gpt-history-mcp",
       "dependencies": {
         "@modelcontextprotocol/sdk": "^1.30.0",
         "zod": "^4.6.5",

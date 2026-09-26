@@ -5,7 +5,7 @@ import { z } from "zod";
 import { openCatalog, searchCatalog } from "./catalog.ts";
 import { getConversation, searchConversations } from "./chatgpt.ts";
 
-const server = new McpServer({ name: "chatgpt-mcp", version: "0.1.0" });
+const server = new McpServer({ name: "gpt-history-mcp", version: "0.1.0" });
 const readOnly = { readOnlyHint: true, openWorldHint: true } as const;
 const json = (value: unknown) => ({ content: [{ type: "text" as const, text: JSON.stringify(value, null, 2) }] });
 

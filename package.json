@@ -1,12 +1,12 @@
 {
-  "name": "chatgpt-mcp",
+  "name": "gpt-history-mcp",
   "version": "0.1.0",
   "description": "MCP server to search and read your ChatGPT conversations via the ChatGPT desktop app catalog",
   "license": "MIT",
   "author": "Yunosuke Yoshino",
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/YunosukeYoshino/chatgpt-mcp.git"
+    "url": "git+https://github.com/YunosukeYoshino/gpt-history-mcp.git"
   },
   "keywords": [
     "mcp",
